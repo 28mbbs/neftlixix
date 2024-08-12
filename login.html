@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="text" id="login" placeholder="Login" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p id="error-message"></p>
+    </div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuzECi89x-t7kQFrgCGS8DKENi1x0QUYk",
+            authDomain: "projectwith-50713.firebaseapp.com",
+            databaseURL: "https://projectwith-50713-default-rtdb.firebaseio.com",
+            projectId: "projectwith-50713",
+            storageBucket: "projectwith-50713.appspot.com",
+            messagingSenderId: "934696656108",
+            appId: "1:934696656108:web:7ec8605759ac1c6a6559c9",
+            measurementId: "G-DFZK62DXHB"
+        };
+
+        // Инициализация Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const userRef = ref(database, `users/${login}`);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    if (userData.password === password) {
+                        window.location.href = 'index.html';
+                    } else {
+                        document.getElementById('error-message').innerText = 'Invalid password.';
+                    }
+                } else {
+                    document.getElementById('error-message').innerText = 'User not found.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-message').innerText = 'Error occurred.';
+            }
+        });
+    </script>
+</body>
+</html>
